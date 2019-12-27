@@ -1,10 +1,28 @@
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="id.ac.ui.cs.mobileprogramming.izzanfi.musicx.MainActivity">
+    tools:context="id.ac.ui.cs.mobileprogramming.izzanfi.musicx.MainMenuActivity">
+
     <item
-        android:id="@+id/action_settings"
-        android:orderInCategory="100"
-        android:title="@string/action_settings"
-        app:showAsAction="never" />
+        android:id="@+id/action_now_playing"
+        android:icon="@drawable/baseline_album_black_24"
+        android:orderInCategory="1"
+        app:showAsAction="always"
+        android:title="Now Playing"/>
+
+    <item
+        android:id="@+id/action_shuffle"
+        android:icon="@drawable/baseline_shuffle_white_24"
+        android:orderInCategory="2"
+        app:showAsAction="always"
+        android:title="Shuffle"/>
+
+    <item
+        android:id="@+id/action_end"
+        android:icon="@drawable/baseline_cancel_white_24"
+        android:orderInCategory="3"
+        app:showAsAction="always"
+        android:title="End"/>
+
 </menu>
