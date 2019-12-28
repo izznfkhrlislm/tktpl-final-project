@@ -27,6 +27,10 @@ import static id.ac.ui.cs.mobileprogramming.izzanfi.musicx.App.CHANNEL_ID;
 public class MusicService extends Service implements MediaPlayer.OnPreparedListener,
         MediaPlayer.OnErrorListener, MediaPlayer.OnCompletionListener {
 
+    static {
+        System.loadLibrary("native-lib");
+    }
+
     private MediaPlayer mediaPlayer;
     private ArrayList<Song> songs;
     private int songPos;
@@ -201,12 +205,10 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
         stopForeground(true);
     }
 
-    public boolean toggleShuffle() {
-        if (shuffle) {
-            shuffle = false;
-        } else {
-            shuffle = true;
-        }
+    public boolean toggleShuffleBtn() {
+        shuffle = toggleShuffle(shuffle);
         return shuffle;
     }
+
+    public native boolean toggleShuffle(boolean shuffleStatus);
 }

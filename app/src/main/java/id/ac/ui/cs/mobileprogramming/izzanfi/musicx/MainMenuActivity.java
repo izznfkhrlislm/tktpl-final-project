@@ -1,15 +1,20 @@
 package id.ac.ui.cs.mobileprogramming.izzanfi.musicx;
 
 import android.Manifest;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
+import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -48,6 +53,7 @@ public class MainMenuActivity extends AppCompatActivity implements MediaControll
     private String currentAlbum;
 
     private MusicController controller;
+    private BroadcastReceiver networkStatusReceiver;
 
     private boolean paused = false, playbackPaused = false;
 
@@ -62,8 +68,11 @@ public class MainMenuActivity extends AppCompatActivity implements MediaControll
 
         songListRv = findViewById(R.id.song_list);
         songList = new ArrayList<>();
-        checkUserPermission();
 
+        networkStatusReceiver = new NetworkChangeReceiver();
+        registerNetworkBroadcast();
+
+        checkUserPermission();
         Collections.sort(songList, new Comparator<Song>() {
             @Override
             public int compare(Song song, Song t1) {
@@ -77,6 +86,23 @@ public class MainMenuActivity extends AppCompatActivity implements MediaControll
         adapter.notifyDataSetChanged();
 
         setController();
+    }
+
+    private void registerNetworkBroadcast() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            registerReceiver(networkStatusReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            registerReceiver(networkStatusReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+        }
+    }
+
+    protected void unregisterNetworkBroadcast() {
+        try {
+            unregisterReceiver(networkStatusReceiver);
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        }
     }
 
     private ServiceConnection musicConnection = new ServiceConnection() {
@@ -138,7 +164,7 @@ public class MainMenuActivity extends AppCompatActivity implements MediaControll
                 System.exit(0);
                 break;
             case R.id.action_shuffle:
-                boolean shuffle = service.toggleShuffle();
+                boolean shuffle = service.toggleShuffleBtn();
                 Toast.makeText(this, shuffle ? "Shuffle Mode on!" : "Shuffle mode off!", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.action_now_playing:
@@ -365,8 +391,9 @@ public class MainMenuActivity extends AppCompatActivity implements MediaControll
 
     @Override
     protected void onDestroy() {
+        super.onDestroy();
+        unregisterNetworkBroadcast();
         stopService(playIntent);
         service = null;
-        super.onDestroy();
     }
 }
